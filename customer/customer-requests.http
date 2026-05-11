@@ -1,0 +1,49 @@
+### Archivo de Pruebas HTTP para el microservicio Customer
+### Asegúrate de instalar la extensión "REST Client" en VS Code
+
+@host = http://localhost:8081
+# Cambia el puerto si tu servicio corre en uno diferente
+
+### 1. Crear un nuevo cliente (POST)
+POST {{host}}/api/customers
+Content-Type: application/json
+
+{
+  "document": "100123456",
+  "firstname": "John",
+  "lastname": "Doe",
+  "address": "123 Main Street",
+  "phone": "3001234567",
+  "email": "john.doe@example.com",
+  "username": "johndoe",
+  "password": "SecurePassword123"
+}
+
+###
+
+### 2. Obtener todos los clientes (GET)
+GET {{host}}/api/customers
+
+###
+
+### 3. Obtener un cliente por su documento (GET)
+GET {{host}}/api/customers/100123456
+
+###
+
+### 4. Actualizar la información de un cliente (PUT)
+PUT {{host}}/api/customers/100123456
+Content-Type: application/json
+
+{
+  "firstname": "Johnathan",
+  "lastname": "Doe Updated",
+  "address": "456 Advanced Ave",
+  "phone": "3009876543",
+  "email": "johndoe.updated@example.com"
+}
+
+###
+
+### 5. Eliminar un cliente por su documento (DELETE)
+DELETE {{host}}/api/customers/100123456

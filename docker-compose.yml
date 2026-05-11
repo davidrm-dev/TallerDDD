@@ -1,0 +1,69 @@
+﻿services:
+  # 1. Base de datos para el microservicio CUSTOMER (PostgreSQL)
+  postgres-customer:
+    image: postgres:15
+    container_name: postgres-taller-ddd
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: customer_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. Base de datos para el microservicio LOGIN (MySQL)
+  mysql-login:
+    image: mysql:8.0
+    container_name: mysql-taller-ddd
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlpassword
+      MYSQL_DATABASE: login_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 3. Base de datos para el microservicio ORDER (MongoDB)
+  mongo-order:
+    image: mongo:6.0
+    container_name: mongo-taller-ddd
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongopassword
+      MONGO_INITDB_DATABASE: order_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # 4. Infraestructura de mensajería (Kafka y Zookeeper)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper-taller-ddd
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka-taller-ddd
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+volumes:
+  postgres_data:
+  mysql_data:
+  mongo_data:
