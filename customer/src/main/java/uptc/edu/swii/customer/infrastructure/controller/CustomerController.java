@@ -20,6 +20,9 @@ import uptc.edu.swii.customer.application.usecases.DeleteCustomerUseCase;
 import uptc.edu.swii.customer.application.usecases.FindCustomerByIdUseCase;
 import uptc.edu.swii.customer.application.usecases.GetAllCustomersUseCase;
 import uptc.edu.swii.customer.application.usecases.UpdateCustomerUseCase;
+import uptc.edu.swii.customer.domain.exception.CustomerNotFoundException;
+import uptc.edu.swii.customer.domain.exception.DuplicateCustomerException;
+import uptc.edu.swii.customer.domain.exception.InvalidCustomerStateException;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -60,7 +63,7 @@ public class CustomerController {
         try {
             CustomerResponse createdCustomer = createCustomerUseCase.execute(customerRequest);
             return ResponseEntity.ok(createdCustomer);
-        } catch (IllegalArgumentException e) {
+        } catch (DuplicateCustomerException | InvalidCustomerStateException e) {
             return ResponseEntity.badRequest().build();
         }
     }
@@ -70,8 +73,10 @@ public class CustomerController {
         try {
             CustomerResponse updatedCustomer = updateCustomerUseCase.execute(document, customerRequest);
             return ResponseEntity.ok(updatedCustomer);
-        } catch (IllegalArgumentException e) {
+        } catch (CustomerNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (InvalidCustomerStateException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -81,5 +86,3 @@ public class CustomerController {
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
-
-

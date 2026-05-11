@@ -2,13 +2,15 @@ package uptc.edu.swii.customer.domain;
 
 import uptc.edu.swii.customer.shared.domain.DomainEvent;
 
-public class CustomerCreatedEvent extends DomainEvent{
+public class CustomerCreatedEvent extends DomainEvent {
 
-    private String document;
-    private String username;
-    private String password;
+    public static final String EVENT_TYPE = "CustomerCreated";
+    private final String document;
+    private final String username;
+    private final String password;
 
     public CustomerCreatedEvent(String document, String username, String password) {
+        super(EVENT_TYPE);
         this.document = document;
         this.username = username;
         this.password = password;
@@ -17,19 +19,10 @@ public class CustomerCreatedEvent extends DomainEvent{
     public String getDocument() {
         return document;
     }
-    public void setDocument(String document) {
-        this.document = document;
-    }
     public String getUsername() {
         return username;
     }
-    public void setUsername(String username) {
-        this.username = username;
-    }
     public String getPassword() {
         return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

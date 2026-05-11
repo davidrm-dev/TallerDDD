@@ -28,7 +28,9 @@ public class CustomerRepositoryImpl implements CustomerRepository {
             customer.getLastname(),
             customer.getAddress(),
             customer.getPhone(),
-            customer.getEmail().getValue()
+            customer.getEmail().getValue(),
+            customer.getUsername(),
+            customer.getPassword()
         );
         jpaRepository.save(entity);
 
@@ -60,13 +62,15 @@ public class CustomerRepositoryImpl implements CustomerRepository {
     }
 
     private Customer toDomain(CustomerEntity entity) {
-        return new Customer(
+        return Customer.create(
             new CustomerId(entity.getDocument()),
             entity.getFirstname(),
             entity.getLastname(),
             entity.getAddress(),
             entity.getPhone(),
-            Email.of(entity.getEmail())
+            Email.of(entity.getEmail()),
+            entity.getUsername(),
+            entity.getPassword()
         );
     }
 }

@@ -1,0 +1,120 @@
+{
+  "info": {
+    "_postman_id": "taller-ddd-microservices",
+    "name": "TallerDDD Microservices",
+    "description": "API tests for Customer, Login, Order microservices with DDD and Kafka event-driven architecture",
+    "schema": "https://schema.getpostman.com/json/d Collection/v2.1.0/"
+  },
+  "item": [
+    {
+      "name": "Customer Service (8081)",
+      "item": [
+        {
+          "name": "1. List all customers",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Response is array', function() { var jsonData = pm.response.json(); pm.expect(jsonData).to.be.an('array'); });"]}}],
+          "request": {"method": "GET", "url": {"raw": "http://localhost:8081/api/customers", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "customers"]}, "header": [{"key": "Content-Type", "value": "application/json"}]}
+        },
+        {
+          "name": "2. Get customer by document",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Has document', function() { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('document'); });"]}}],
+          "request": {"method": "GET", "url": {"raw": "http://localhost:8081/api/customers/44444", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "customers", "44444"]}, "header": [{"key": "Content-Type", "value": "application/json"}]}
+        },
+        {
+          "name": "3. Create customer (triggers Kafka event)",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Customer created', function() { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('document'); });"]}}],
+          "request": {"method": "POST", "url": {"raw": "http://localhost:8081/api/customers", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "customers"]}, "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"document\": \"77777\",\n  \"firstname\": \"Apidog\",\n  \"lastname\": \"Test\",\n  \"address\": \"123 Apidog St\",\n  \"phone\": \"555-7777\",\n  \"email\": \"apidog@test.com\",\n  \"username\": \"apidoguser\",\n  \"password\": \"pass777\"\n}"}}
+        },
+        {
+          "name": "4. Update customer",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });"]}}],
+          "request": {"method": "PUT", "url": {"raw": "http://localhost:8081/api/customers/77777", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "customers", "77777"]}, "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"firstname\": \"Updated\",\n  \"lastname\": \"User\",\n  \"address\": \"456 Updated Ave\",\n  \"phone\": \"555-0000\",\n  \"email\": \"updated@test.com\",\n  \"username\": \"updateduser\",\n  \"password\": \"newpass\"\n}"}}
+        },
+        {
+          "name": "5. Delete customer",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 204', function() { pm.response.to.have.status(204); });"]}}],
+          "request": {"method": "DELETE", "url": {"raw": "http://localhost:8081/api/customers/77777", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "customers", "77777"]}, "header": []}
+        }
+      ]
+    },
+    {
+      "name": "Login Service (8082)",
+      "item": [
+        {
+          "name": "1. List all logins",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Response is array', function() { var jsonData = pm.response.json(); pm.expect(jsonData).to.be.an('array'); });"]}}],
+          "request": {"method": "GET", "url": {"raw": "http://localhost:8082/api/logins", "protocol": "http", "host": ["localhost"], "port": "8082", "path": ["api", "logins"]}, "header": [{"key": "Content-Type", "value": "application/json"}]}
+        },
+        {
+          "name": "2. Get login by customer ID",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Has customerId', function() { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('customerId'); });"]}}],
+          "request": {"method": "GET", "url": {"raw": "http://localhost:8082/api/logins/customer/44444", "protocol": "http", "host": ["localhost"], "port": "8082", "path": ["api", "logins", "customer", "44444"]}, "header": [{"key": "Content-Type", "value": "application/json"}]}
+        }
+      ]
+    },
+    {
+      "name": "Order Service (8083)",
+      "item": [
+        {
+          "name": "1. List all orders",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Response is array', function() { var jsonData = pm.response.json(); pm.expect(jsonData).to.be.an('array'); });"]}}],
+          "request": {"method": "GET", "url": {"raw": "http://localhost:8083/api/orders", "protocol": "http", "host": ["localhost"], "port": "8083", "path": ["api", "orders"]}, "header": [{"key": "Content-Type", "value": "application/json"}]}
+        },
+        {
+          "name": "2. Get order by ID",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Has orderId', function() { var jsonData = pm.response.json(); pm.expect(jsonData).to.have.property('orderId'); });"]}}],
+          "request": {"method": "GET", "url": {"raw": "http://localhost:8083/api/orders/1ff29225-c30d-4aaf-89a1-a0a8fb7a6491", "protocol": "http", "host": ["localhost"], "port": "8083", "path": ["api", "orders", "1ff29225-c30d-4aaf-89a1-a0a8fb7a6491"]}, "header": [{"key": "Content-Type", "value": "application/json"}]}
+        },
+        {
+          "name": "3. Get orders by customer ID",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Response is array', function() { var jsonData = pm.response.json(); pm.expect(jsonData).to.be.an('array'); });"]}}],
+          "request": {"method": "GET", "url": {"raw": "http://localhost:8083/api/orders/customer/44444", "protocol": "http", "host": ["localhost"], "port": "8083", "path": ["api", "orders", "customer", "44444"]}, "header": [{"key": "Content-Type", "value": "application/json"}]}
+        },
+        {
+          "name": "4. Create order (validates customer exists)",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Order created with status PENDING', function() { var jsonData = pm.response.json(); pm.expect(jsonData.status).to.eql('PENDING'); });"]}}],
+          "request": {"method": "POST", "url": {"raw": "http://localhost:8083/api/orders", "protocol": "http", "host": ["localhost"], "port": "8083", "path": ["api", "orders"]}, "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"44444\",\n  \"items\": [\n    {\n      \"productId\": \"PROD-APIDOG\",\n      \"productName\": \"Test Product\",\n      \"quantity\": 3,\n      \"price\": 25.99\n    }\n  ]\n}"}}
+        },
+        {
+          "name": "5. Create order - Error (customer not found)",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 400', function() { pm.response.to.have.status(400); });"]}}],
+          "request": {"method": "POST", "url": {"raw": "http://localhost:8083/api/orders", "protocol": "http", "host": ["localhost"], "port": "8083", "path": ["api", "orders"]}, "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"NONEXISTENT\",\n  \"items\": [\n    {\n      \"productId\": \"PROD-001\",\n      \"productName\": \"Widget\",\n      \"quantity\": 1,\n      \"price\": 9.99\n    }\n  ]\n}"}}
+        },
+        {
+          "name": "6. Update order status",
+          "event": [{"listen": "test", "script": {"exec": ["pm.test('Status 200', function() { pm.response.to.have.status(200); });", "pm.test('Status updated to CONFIRMED', function() { var jsonData = pm.response.json(); pm.expect(jsonData.status).to.eql('CONFIRMED'); });"]}}],
+          "request": {"method": "PATCH", "url": {"raw": "http://localhost:8083/api/orders/1ff29225-c30d-4aaf-89a1-a0a8fb7a6491/status", "protocol": "http", "host": ["localhost"], "port": "8083", "path": ["api", "orders", "1ff29225-c30d-4aaf-89a1-a0a8fb7a6491", "status"]}, "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"status\": \"CONFIRMED\"\n}"}}
+        }
+      ]
+    },
+    {
+      "name": "E2E Flow Test",
+      "item": [
+        {
+          "name": "Step 1: Create customer",
+          "event": [{"listen": "test", "script": ["pm.test('Customer created', function() { pm.response.to.have.status(200); });", "var jsonData = pm.response.json();", "pm.environment.set('test_customer_id', jsonData.document);"]}],
+          "request": {"method": "POST", "url": {"raw": "http://localhost:8081/api/customers", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["api", "customers"]}, "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"document\": \"88888\",\n  \"firstname\": \"E2E\",\n  \"lastname\": \"Test\",\n  \"address\": \"123 E2E St\",\n  \"phone\": \"555-8888\",\n  \"email\": \"e2e@test.com\",\n  \"username\": \"e2euser\",\n  \"password\": \"pass888\"\n}"}}
+        },
+        {
+          "name": "Step 2: Verify login auto-created",
+          "event": [{"listen": "test", "script": ["pm.test('Login found', function() { pm.response.to.have.status(200); });"]}],
+          "request": {"method": "GET", "url": {"raw": "http://localhost:8082/api/logins/customer/88888", "protocol": "http", "host": ["localhost"], "port": "8082", "path": ["api", "logins", "customer", "88888"]}, "header": [{"key": "Content-Type", "value": "application/json"}]}
+        },
+        {
+          "name": "Step 3: Verify customer registered in Order",
+          "event": [{"listen": "test", "script": ["pm.test('Customer registered', function() { pm.response.to.have.status(200); });"]}],
+          "request": {"method": "GET", "url": {"raw": "http://localhost:8083/api/orders/customer/88888", "protocol": "http", "host": ["localhost"], "port": "8083", "path": ["api", "orders", "customer", "88888"]}, "header": [{"key": "Content-Type", "value": "application/json"}]}
+        },
+        {
+          "name": "Step 4: Create order",
+          "event": [{"listen": "test", "script": ["pm.test('Order created', function() { pm.response.to.have.status(200); });", "var jsonData = pm.response.json();", "pm.environment.set('test_order_id', jsonData.orderId);"]}],
+          "request": {"method": "POST", "url": {"raw": "http://localhost:8083/api/orders", "protocol": "http", "host": ["localhost"], "port": "8083", "path": ["api", "orders"]}, "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"customerId\": \"88888\",\n  \"items\": [\n    {\n      \"productId\": \"PROD-E2E\",\n      \"productName\": \"E2E Product\",\n      \"quantity\": 1,\n      \"price\": 99.99\n    }\n  ]\n}"}}
+        },
+        {
+          "name": "Step 5: Confirm order",
+          "event": [{"listen": "test", "script": ["pm.test('Order confirmed', function() { pm.response.to.have.status(200); });"]}],
+          "request": {"method": "PATCH", "url": {"raw": "http://localhost:8083/api/orders/{{test_order_id}}/status", "protocol": "http", "host": ["localhost"], "port": "8083", "path": ["api", "orders", "{{test_order_id}}", "status"]}, "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"status\": \"CONFIRMED\"\n}"}}
+        }
+      ]
+    }
+  ]
+}
