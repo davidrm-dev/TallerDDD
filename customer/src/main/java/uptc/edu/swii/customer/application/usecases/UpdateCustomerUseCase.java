@@ -9,29 +9,37 @@ import uptc.edu.swii.customer.domain.Customer;
 import uptc.edu.swii.customer.domain.CustomerId;
 import uptc.edu.swii.customer.domain.CustomerRepository;
 import uptc.edu.swii.customer.domain.Email;
+import uptc.edu.swii.customer.domain.exception.CustomerNotFoundException;
+import uptc.edu.swii.customer.infrastructure.publisher.DomainEventPublisher;
 
 @Service
 @Transactional
 public class UpdateCustomerUseCase {
 
     private final CustomerRepository customerRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
-    public UpdateCustomerUseCase(CustomerRepository customerRepository) {
+    public UpdateCustomerUseCase(CustomerRepository customerRepository,
+                                  DomainEventPublisher domainEventPublisher) {
         this.customerRepository = customerRepository;
+        this.domainEventPublisher = domainEventPublisher;
     }
 
     public CustomerResponse execute(String document, CustomerRequest request) {
         Customer customer = customerRepository.findById(new CustomerId(document))
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with document: " + document));
 
-        customer.setFirstname(request.getFirstname());
-        customer.setLastname(request.getLastname());
-        customer.setAddress(request.getAddress());
-        customer.setPhone(request.getPhone());
-        customer.setEmail(Email.of(request.getEmail()));
+        customer.updatePersonalInfo(
+                request.getFirstname(),
+                request.getLastname(),
+                request.getAddress(),
+                request.getPhone()
+        );
+        customer.updateEmail(Email.of(request.getEmail()));
 
         Customer updatedCustomer = customerRepository.save(customer);
-        
+        domainEventPublisher.publish(updatedCustomer);
+
         return mapToResponse(updatedCustomer);
     }
 
